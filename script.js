@@ -1,4 +1,5 @@
-//Quiz Questions List
+// List storing my data 
+// Hold all my questions, choices, and answers
 const questionsList = [
   { question: "In a website browser bar, what does WWW stand for?", answers: ["Wishing Wealth Website", "World Wide Web", "Water Wave West", "Wellbeing Worldly Wise"], correct: "World Wide Web" },
   { question: "What is the capital of Florida?", answers: ["Miami", "Tallahassee", "Key West", "Jacksonville"], correct: "Tallahassee" },
@@ -22,76 +23,72 @@ const questionsList = [
   { question: "What programming language is often used for developing Android applications?", answers: ["Python", "Java", "HTML", "PHP"], correct: "Java" }
 ];
 
+// === Variables for score and tracking ===
 let currentQuestionIndex = 0;
 let score = 0;
 
-//Load a Question
-function loadQuestion() {
-  clearAnswers(); // Remove old answer buttons
+// === Student-Developed Procedure ===
+// This function shows a question and its answers.
+// It uses sequencing (step-by-step), selection (checking right/wrong), and iteration (loop through answers).
+// The parameter "questionObject" is used to control which question to show.
+function showQuestion(questionObject) {
+  // Show the question text
+  document.getElementById('question').textContent = questionObject.question;
 
-  let currentQuestion = questionsList[currentQuestionIndex];
-  document.getElementById('question').textContent = currentQuestion.question;
+  // Clear out old buttons
+  document.getElementById('answer-buttons').innerHTML = '';
 
-  let answerButtons = document.getElementById('answer-buttons');
-
-  currentQuestion.answers.forEach(answer => {
+  // === Code Segment 2: List being used ===
+  // Loop through the answers in the list and make a button for each one
+  questionObject.answers.forEach(answer => {
     let button = document.createElement('button');
     button.textContent = answer;
 
+    // When clicked, check if answer selection is correct
     button.onclick = function () {
-      chooseAnswer(answer);
+      if (answer === questionObject.correct) {
+        score++;
+        document.getElementById('result').textContent = "Correct!";
+      } else {
+        document.getElementById('result').textContent = "Wrong! The correct answer was: " + questionObject.correct;
+      }
+
+      document.getElementById('next-button').style.display = 'inline-block';
     };
 
-    answerButtons.appendChild(button);
+    // Add button to the page
+    document.getElementById('answer-buttons').appendChild(button);
   });
 }
 
-//Clear old answers
-function clearAnswers() {
-  document.getElementById('answer-buttons').innerHTML = '';
-}
-
-// Answer Check 
-function chooseAnswer(selectedAnswer) {
-  let correctAnswer = questionsList[currentQuestionIndex].correct;
-  let resultElement = document.getElementById('result');
-
-  if (selectedAnswer === correctAnswer) {
-    score += 1;
-    resultElement.textContent = "Correct!";
-  } else {
-    resultElement.textContent = "Wrong! The correct answer was: " + correctAnswer;
-  }
-
-  document.getElementById('next-button').style.display = 'inline-block';
-}
-
-//Load next question or finish
+// Go to the next question or end the quiz 
 function nextQuestion() {
-  currentQuestionIndex += 1;
+  currentQuestionIndex++;
 
   if (currentQuestionIndex < questionsList.length) {
-    document.getElementById('result').textContent = '';
+    document.getElementById('result').textContent = "";
     document.getElementById('next-button').style.display = 'none';
-    loadQuestion();
+
+    // Call my procedure and pass in a different question each time
+    showQuestion(questionsList[currentQuestionIndex]);
   } else {
-    endGame();
+    endQuiz();
   }
 }
 
-//End the Quiz 
-function endGame() {
+// End the quiz and show the final score 
+function endQuiz() {
   document.getElementById('question-container').style.display = 'none';
   document.getElementById('result').style.display = 'none';
   document.getElementById('next-button').style.display = 'none';
 
-  let endContainer = document.getElementById('end-container');
-  endContainer.style.display = 'block';
-
+  document.getElementById('end-container').style.display = 'block';
   document.getElementById('final-score').textContent =
     "You scored " + score + " out of " + questionsList.length + "!";
 }
 
-//Start the Quiz 
+// Start the quiz 
 document.getElementById('next-button').addEventListener('click', nextQuestion);
-loadQuestion();
+
+// Show the first question
+showQuestion(questionsList[currentQuestionIndex]);
